@@ -37,7 +37,7 @@ import org.apache.cxf.common.util.PackageUtils;
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSServerParameters;
 import org.apache.cxf.configuration.jsse.spring.TLSServerParametersConfig;
-import org.apache.cxf.jaxb.JAXBContextCache;
+import org.apache.cxf.common.jaxb.JAXBContextCache;
 import org.apache.cxf.transport.http_jetty.JettyHTTPServerEngine;
 import org.apache.cxf.transport.http_jetty.JettyHTTPServerEngineFactory;
 import org.apache.cxf.transport.http_jetty.ThreadingParameters;

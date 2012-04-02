@@ -18,6 +18,7 @@
 package org.apache.cxf.transport.http_jetty.blueprint;
 
 import java.io.StringWriter;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
@@ -43,12 +44,27 @@ public class JettyServerEngineFactoryParser extends AbstractBPBeanDefinitionPars
 
     public static final String JETTY_THREADING = "http://cxf.apache.org/configuration/parameterized-types";
 
+    public static String getIdOrName(Element elem) {
+        String id = elem.getAttribute("id");
+
+        if (null == id || "".equals(id)) {
+            String names = elem.getAttribute("name");
+            if (null != names) {
+                StringTokenizer st = new StringTokenizer(names, ",");
+                if (st.countTokens() > 0) {
+                    id = st.nextToken();
+                }
+            }
+        }
+        return id;
+    }
+
     public Metadata parse(Element element, ParserContext context) {
 
         //Endpoint definition
         MutableBeanMetadata ef = context.createMetadata(MutableBeanMetadata.class);
-        if (!StringUtils.isEmpty(JettyServerEngineParser.getIdOrName(element))) {
-            ef.setId(JettyServerEngineParser.getIdOrName(element));
+        if (!StringUtils.isEmpty(getIdOrName(element))) {
+            ef.setId(getIdOrName(element));
         } else {
             ef.setId("jetty.engine.factory-holder-" + UUID.randomUUID().toString());
         }
