@@ -18,6 +18,7 @@
  */
 package org.apache.cxf.sts.token.validator;
 
+import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -215,9 +216,17 @@ public class SAMLTokenValidator implements TokenValidator {
                     }
                 }
             }
+            response.setTokenRealm(tokenRealm);
             
             if (!validateConditions(assertion, validateTarget, secToken, tokenParameters.getTokenStore())) {
                 return response;
+            }
+            
+            // Store the successfully validated token in the cache
+            if (secToken == null) {
+                storeTokenInCache(
+                    tokenParameters.getTokenStore(), assertion, tokenParameters.getPrincipal()
+                );
             }
             
             // Add the AssertionWrapper to the properties, as the claims are required to be transformed
@@ -225,7 +234,6 @@ public class SAMLTokenValidator implements TokenValidator {
             addProps.put(AssertionWrapper.class.getName(), assertion);
             response.setAdditionalProperties(addProps);
             
-            response.setTokenRealm(tokenRealm);
             validateTarget.setState(STATE.VALID);
         } catch (WSSecurityException ex) {
             LOG.log(Level.WARNING, "", ex);
@@ -295,5 +303,31 @@ public class SAMLTokenValidator implements TokenValidator {
             return false;
         }
         return true;
+    }
+    
+    protected void storeTokenInCache(
+        TokenStore tokenStore, 
+        AssertionWrapper assertion, 
+        Principal principal
+    ) throws WSSecurityException {
+        // Store the successfully validated token in the cache
+        byte[] signatureValue = assertion.getSignatureValue();
+        if (tokenStore != null && signatureValue != null && signatureValue.length > 0) {
+            DateTime validTill = null;
+            if (assertion.getSamlVersion().equals(SAMLVersion.VERSION_20)) {
+                validTill = assertion.getSaml2().getConditions().getNotOnOrAfter();
+            } else {
+                validTill = assertion.getSaml1().getConditions().getNotOnOrAfter();
+            }
+            
+            SecurityToken securityToken = new SecurityToken(assertion.getId(), null, validTill.toDate());
+            securityToken.setToken(assertion.getElement());
+            securityToken.setPrincipal(principal);
+
+            int hash = Arrays.hashCode(signatureValue);
+            securityToken.setTokenHash(hash);
+            String identifier = Integer.toString(hash);
+            tokenStore.add(identifier, securityToken);
+        }
     }
 }
