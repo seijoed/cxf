@@ -27,27 +27,42 @@ import org.apache.cxf.sts.token.provider.TokenReference;
  */
 public class TokenRenewerResponse {
 
-    private boolean tokenRenewed;
-    private Element renewedToken;
+    private Element token;
     private String tokenId;
     private long lifetime;
     private TokenReference attachedReference;
     private TokenReference unAttachedReference;
     
-    public void setTokenRenewed(boolean tokenRenewed) {
-        this.tokenRenewed = tokenRenewed;
+    /**
+     * Set the token
+     * @param token the token to set
+     */
+    public void setToken(Element token) {
+        this.token = token;
     }
     
-    public boolean isTokenRenewed() {
-        return tokenRenewed;
+    /**
+     * Get the token
+     * @return the token to set
+     */
+    public Element getToken() {
+        return token;
+    }
+
+    /**
+     * Set the token Id
+     * @param tokenId the token Id
+     */
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
     
-    public void setRenewedToken(Element renewedToken) {
-        this.renewedToken = renewedToken;
-    }
-    
-    public Element getRenewedToken() {
-        return renewedToken;
+    /**
+     * Get the token Id
+     * @return the token Id
+     */
+    public String getTokenId() {
+        return tokenId;
     }
     
     /**
@@ -97,21 +112,6 @@ public class TokenRenewerResponse {
     public TokenReference getUnAttachedReference() {
         return unAttachedReference;
     }
-    
-    /**
-     * Set the token Id
-     * @param tokenId the token Id
-     */
-    public void setTokenId(String tokenId) {
-        this.tokenId = tokenId;
-    }
-    
-    /**
-     * Get the token Id
-     * @return the token Id
-     */
-    public String getTokenId() {
-        return tokenId;
-    }
+
     
 }

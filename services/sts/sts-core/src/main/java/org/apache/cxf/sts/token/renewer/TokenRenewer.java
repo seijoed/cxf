@@ -25,7 +25,6 @@ import org.apache.cxf.sts.request.ReceivedToken;
 /**
  * An interface that can renew a security token.
  */
-
 public interface TokenRenewer {
 
     /**
@@ -34,10 +33,14 @@ public interface TokenRenewer {
     void setVerifyProofOfPossession(boolean verifyProofOfPossession);
     
     /**
-     * Return true if this TokenRenewer implementation is able to renew a token
-     * that corresponds to the given token.
+     * Return true if this TokenRenewer implementation is able to renew a token.
      */
-    boolean canHandleToken(ReceivedToken cancelTarget);
+    boolean canHandleToken(ReceivedToken renewTarget);
+    
+    /**
+     * Return true if this TokenRenewer implementation is able to renew a token in the given realm.
+     */
+    boolean canHandleToken(ReceivedToken renewTarget, String realm);
 
     /**
      * Renew a token given a TokenRenewerParameters
